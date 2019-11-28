@@ -32,6 +32,7 @@ using Autofac.Extensions.DependencyInjection;
 using ACS.Infrastructure.Data.Repositories;
 using ACS.Core.Interfaces.Repositories;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace ACS.API
 {
@@ -117,7 +118,7 @@ namespace ACS.API
                 options.Password.RequiredLength = 6;
             }).AddEntityFrameworkStores<ACSDbContext>().AddDefaultTokenProviders();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidation(options =>
+            services.AddMvc(option => option.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation(options =>
             {
                 options.RegisterValidatorsFromAssemblyContaining<Startup>();
             });
@@ -134,7 +135,7 @@ namespace ACS.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseExceptionHandler(
                 builder =>
@@ -156,6 +157,7 @@ namespace ACS.API
                             }
                         });
                 });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
